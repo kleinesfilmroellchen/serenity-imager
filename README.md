@@ -26,7 +26,7 @@ You need the SerenityOS project repository itself for either method.
 git clone https://github.com/SerenityOS/serenity.git /your/folder/of/choice
 ```
 
-### Script
+## Script `create_image.sh`
 
 This builds SerenityOS and its toolchain on your system itself. Follow the [build instructions](https://github.com/SerenityOS/serenity/blob/master/Documentation/BuildInstructions.md) to find out what you need for that.
 
@@ -34,7 +34,7 @@ The environment variable `SERENITY_DIR` specifies the directory of the SerenityO
 
 The script requires `sudo` permissions for creating the image, just as a normal SerenityOS build does.
 
-### Docker
+## Docker
 
 You need to have [Docker](https://www.docker.com/) installed for the docker method. This assumes you know how to use docker.
 
@@ -48,14 +48,78 @@ Then, you can build this project's docker image and run it.
 
 ```command
 sudo docker build -t serenity-imager .
-sudo docker run -v /serenity/out:/your/target/directory --rm serenity-imagertest
+sudo docker run -v /your/target/directory:/serenity/out --rm serenity-imagertest
 ```
 
-The volume on /serenity/out should be bound to a target directory you want the `monthly` and `nightly` folders to appear in. You can use this project'
-s directory.
+The volume on /serenity/out should be bound to a target directory you want the `monthly` and `nightly` folders to appear in. You can use this project's directory.
 
-### Further usage
+## Automation (with Docker)
+
+There are two additional scripts that automate the above processes for you.
+
+- `build_dockers.sh` will build and tag both docker images correctly. For this, it requires the environment variables `SERENITY_GIT_DIR` for the SerenityOS git directory (like `SERENITY_DIR` above) and `SERENITY_IMAGER_DIR` for this git repository. This means that the script runs correctly from any folder, making it suitable for use in systemd services.
+- `run_docker.sh` will run the docker container build, again requiring `SERENITY_IMAGER_DIR` to be able to run out of any directory. The monthly and nightly image folders will be mounted into the monthly and nightly folders in this repo.
+
+### Systemd
+
+How you configure systemd to do the automation heavily depends on how exactly you want it to be scheduled in relation to the rest of your system. The following will explain a full stack that uses four units: A `serenity-builder` service and timer that run a weekly docker image and toolchain build, and `serenity-imager` service and timer that run a daily Serenity build and image creation. For both timers, adjust `OnCalendar` to your liking. (Also, these unit files are probably horrific.)
+
+```systemd
+# serenity-builder.timer
+[Unit]
+Description=Builds the SerenityOS toolchain weekly
+
+[Timer]
+OnCalendar=weekly
+AccuracySec=1hour
+Unit=serenity-builder.service
+
+[Install]
+WantedBy=timers.target
+```
+
+```systemd
+# serenity-builder.service
+[Unit]
+Description=Builds the SerenityOS Toolchain
+
+[Service]
+ExecStart=/this/repo/build_dockers.sh
+Environment="SERENITY_GIT_DIR=/the/serenitos/repo"
+Environment="SERENITY_IMAGER_DIR=/this/repo"
+```
+
+```systemd
+# serenity-imager.timer
+[Unit]
+Description=Runs the SerenityOS nightly build every 24 hours
+
+[Timer]
+OnCalendar=daily
+AccuracySec=1hour
+Unit=serenity-imager.service
+
+[Install]
+WantedBy=timers.target
+```
+
+```systemd
+# serenity-imager.service
+[Unit]
+Description=Builds SerenityOS and creates new nightly and monthly images as required
+
+[Service]
+ExecStart=/this/repo/run_docker.sh
+Environment="SERENITY_IMAGER_DIR=/this/repo"
+Environment="SERENITY_GIT_DIR=/the/serenityos/repo"
+```
+
+### Cron
+
+I don't know how to use cronjobs and have not used it with this project. If you do, please open a PR with instructions on how to do the above automation with cron.
+
+## Further usage
 
 It is recommended that the docker run is executed once per day. You can setup a cronjob or a systemd timer or something similar for that. If you want to provide the images on a website, the monthly and nightly folders are suitable for symlinking to a webserver directory.
 
-## License: MIT
+# License: MIT
