@@ -12,7 +12,7 @@ Contrary to popular belief, it is not forbidden to create and/or distribute disk
 
 There are two parts to this project, and you can use both the raw script and the docker method.
 
-The `create_image.sh` script builds SerenityOS and copies the disk image, runnable with QEMU, into the `monthly` and `nightly` repositories. While a nightly image is created for every date, overriding any existing build, a monthly image is only created if none for this month exists yet. This is useful for having the monthly build being at approximately the same state as the monthly updates that Andreas does on his [YouTube channel](https://www.youtube.com/c/AndreasKling): e.g. a build from 1st of June 2021, tagged for 2021-06, will be in about the same state as the master branch when Andreas records his update for May 2021 at the beginning of June.
+The `create_image.sh` script builds SerenityOS and copies the disk image, runnable with QEMU, into the `monthly` and `nightly` repositories. While a nightly image is created for every date, overriding any existing build, a monthly image is only created if none for this month exists yet. This is useful for having the monthly build being at approximately the same state as the monthly updates that Andreas does on his [YouTube channel](https://www.youtube.com/c/AndreasKling): e.g. a build from 31st of May 2021, tagged for 2021-05, will be in about the same state as the master branch when Andreas records his update for May 2021 at the beginning of June.
 
 The docker method will run the build in a safe containerized way, without requiring you to type `sudo`, that also doesn't require you to put unstable software on your base system. This is recommended as the setup is much easier.
 
