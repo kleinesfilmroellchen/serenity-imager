@@ -2,6 +2,8 @@
 # Based on the serenity base container that has the toolchain setup.
 FROM serenity
 
+ARG KILLCACHE=1
+RUN echo "HELLO CACHE $KILLCACHE"
 # suppresses git warnings (we shouldn't have changes in the git repo)
 RUN cd serenity-git; git config pull.ff only
 

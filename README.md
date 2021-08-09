@@ -38,7 +38,7 @@ The script requires `sudo` permissions for creating the image, just as a normal 
 
 You need to have [Docker](https://www.docker.com/) installed for the docker method. This assumes you know how to use docker.
 
-The docker image here depends on the [base image from the SerenityOS toolchain](https://github.com/SerenityOS/serenity/blob/master/Toolchain/Dockerfile). As the image is not available as a normal docker template (like ubuntu, debian etc.), you need to build it yourself. This image comes with a built toolchain and all the build tools ready-to-go. Tag it with `serenity` so that this project's Dockerfile can find it:
+The docker image here depends on a more basic docker image that contains "only SerenityOS", but it is slightly customized from the [base image from the SerenityOS toolchain](https://github.com/SerenityOS/serenity/blob/master/Toolchain/Dockerfile). To not break other people's workflow, this image is provided as SerenityDockerfile, and you can replace the base dockerfile with it. `build_dockers.sh` does this automatically. If you're doing it manually, you have to tag the image with `serenity`:
 
 ```command
 sudo docker build -t serenity .
