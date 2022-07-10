@@ -1,6 +1,6 @@
 # SerenityOS Image creation system
 
-A simple system to automatically build images for SerenityOS. Intended to be used with internet distribution, [just as the author does himself](https://klfr.spdns.de/serenity-iso).
+A simple system to automatically build disk images for SerenityOS. Intended to be used with internet distribution. **These images are not enough to run Serenity itself, you also need Kernel and Prekernel images.**
 
 ## Disclaimer
 
